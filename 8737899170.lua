@@ -66,10 +66,11 @@ local Utils = {} do
         for _, zone in pairs(GameData.Zones) do
             for _, child in ipairs(zone:GetChildren()) do
                 local name = child.Name
+
                 local number = tonumber(name:match("%d+"))
-                if number then
-                    table.insert(zones, {name = name, number = number})
-                end
+                if not number then continue end
+
+                table.insert(zones, {name = name, number = number})
             end
         end
 
@@ -77,7 +78,12 @@ local Utils = {} do
             return a.number < b.number
         end)
 
-        return zones
+        local zoneNames = {}
+        for _, zone in ipairs(zones) do
+            table.insert(zoneNames, zone.name)
+        end
+
+        return zoneNames
     end
 end
 
