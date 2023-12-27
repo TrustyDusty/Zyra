@@ -66,25 +66,28 @@ local Utils = {} do
         for _, zone in pairs(GameData.Zones) do
             for _, child in ipairs(zone:GetChildren()) do
                 local name = child.Name
-
-                local number = tonumber(name:match("%d+"))
-                if not number then continue end
-
-                table.insert(zones, {name = name, number = number})
+                local number = tonumber(name:match("%d+")) -- Extract the number from the name
+                if number then
+                    table.insert(zones, {name = name, number = number})
+                end
             end
         end
-
+    
+        -- Sort the zones based on the numbers in their names
         table.sort(zones, function(a, b)
             return a.number < b.number
         end)
-
+    
+        -- Create a new table with only the zone names
         local zoneNames = {}
         for _, zone in ipairs(zones) do
             table.insert(zoneNames, zone.name)
         end
-
+    
+        -- Now 'zoneNames' contains all zone names in order
         return zoneNames
     end
+    
 end
 
 for _, connection in next, getconnections(localPlayer.Idled) do
