@@ -52,7 +52,8 @@ local GameData = {
         ['Early Game'] = ReplicatedStorage["__DIRECTORY"].Zones['Early Game'],
         ['Mid Game'] = ReplicatedStorage["__DIRECTORY"].Zones['Mid Game'],
         ['End Game'] = ReplicatedStorage["__DIRECTORY"].Zones['End Game']
-    }
+    },
+
 }
 
 local Utils = {} do
@@ -66,28 +67,25 @@ local Utils = {} do
         for _, zone in pairs(GameData.Zones) do
             for _, child in ipairs(zone:GetChildren()) do
                 local name = child.Name
-                local number = tonumber(name:match("%d+")) -- Extract the number from the name
-                if number then
-                    table.insert(zones, {name = name, number = number})
-                end
+
+                local number = tonumber(name:match("%d+"))
+                if not number then continue end
+
+                table.insert(zones, {name = name, number = number})
             end
         end
-    
-        -- Sort the zones based on the numbers in their names
+
         table.sort(zones, function(a, b)
             return a.number < b.number
         end)
-    
-        -- Create a new table with only the zone names
+
         local zoneNames = {}
         for _, zone in ipairs(zones) do
             table.insert(zoneNames, zone.name)
         end
-    
-        -- Now 'zoneNames' contains all zone names in order
+
         return zoneNames
     end
-    
 end
 
 for _, connection in next, getconnections(localPlayer.Idled) do
@@ -97,10 +95,6 @@ end
 localPlayer.CharacterAdded:Connect(function(newC)
     Utils.onCharAdded(newC)
 end)
-
-for i, v in next, Utils.getZones() do
-    print(i, v)
-end
 
 -- cleanup of before UIs created
 for _, v in next, CoreGui:GetChildren() do
@@ -118,3 +112,18 @@ local Window = Library:AddWindow({
 	key = Enum.KeyCode.RightControl,
 	default = true
 })
+
+local Settings = {}
+
+local Tabs = {}
+Tabs.Main = Window:AddTab("Main", {default = true}) 
+do
+    local AutoFarm = Tabs.Main:AddSection("Auto Farm", {default = true})
+    do
+        AutoFarm:AddDropdown("Zones", Utils.getZones(), {default = "1 | Spawn"}, function(value)
+            Settings.SelectedZone = value
+        end)
+
+
+    end
+end
