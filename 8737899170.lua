@@ -47,10 +47,37 @@ local Connections = {} do
     end
 end
 
+local GameData = {
+    Zones = {
+        ['Early Game'] = ReplicatedStorage["__DIRECTORY"].Zones['Early Game'],
+        ['Mid Game'] = ReplicatedStorage["__DIRECTORY"].Zones['Mid Game'],
+        ['End Game'] = ReplicatedStorage["__DIRECTORY"].Zones['End Game']
+    }
+}
+
 local Utils = {} do
     function Utils.onCharAdded(char)
         localChar = char
         localHumanoid = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid")
+    end
+
+    function Utils.getZones()
+        local zones = {}
+        for _, zone in pairs(GameData.Zones) do
+            for _, child in ipairs(zone:GetChildren()) do
+                local name = child.Name
+                local number = tonumber(name:match("%d+"))
+                if number then
+                    table.insert(zones, {name = name, number = number})
+                end
+            end
+        end
+
+        table.sort(zones, function(a, b)
+            return a.number < b.number
+        end)
+
+        return zones
     end
 end
 
@@ -62,9 +89,9 @@ localPlayer.CharacterAdded:Connect(function(newC)
     Utils.onCharAdded(newC)
 end)
 
-local GameData = {
-
-}
+for i, v in next, Utils.getZones() do
+    print(i, v)
+end
 
 -- cleanup of before UIs created
 for _, v in next, CoreGui:GetChildren() do
